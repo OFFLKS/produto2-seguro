@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locadora de Video Games</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        
+        .container { width: 100%; max-width: 450px; margin: 0 auto; padding: 40px 20px; min-height: 100vh; display: flex; align-items: center; }
+        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); display: none; width: 100%; }
+        .card.active { display: block; }
+        
+        h1 { text-align: center; margin-bottom: 10px; color: #333; }
+        .descricao { text-align: center; margin-bottom: 30px; color: #666; }
+        .grupo { margin-bottom: 20px; }
+        .grupo label { display: block; margin-bottom: 8px; font-weight: bold; color: #333; }
+        .grupo input { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; outline: none; }
+        .grupo input:focus { border-color: #667eea; }
+        
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; }
+        .btn-login { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .btn-cadastro { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .link { text-align: center; margin-top: 20px; color: #667eea; cursor: pointer; }
+        
+        .mensagem { padding: 10px; border-radius: 8px; margin-bottom: 20px; text-align: center; display: none; }
+        .mensagem.sucesso { background: #d4edda; color: #155724; display: block; }
+        .mensagem.erro { background: #f8d7da; color: #721c24; display: block; }
+        
+        .dashboard { display: none; padding: 30px; background: #f5f5f5; min-height: 100vh; }
+        .dashboard.active { display: block; }
+        .topo { display: flex; justify-content: space-between; align-items: center; background: white; padding: 20px; border-radius: 15px; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
+        .menu { display: flex; gap: 15px; flex-wrap: wrap; }
+        .menu button, .logout { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; }
+        .logout { background: #dc2626; }
+        
+        .games { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+        .game-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: 0.3s; cursor: pointer; }
+        .game-card:hover { transform: translateY(-5px); }
+        .game-card img { width: 100%; height: 200px; object-fit: cover; }
+        .game-info { padding: 20px; }
+        .preco { color: #667eea; font-size: 18px; font-weight: bold; margin: 10px 0; }
+        .btn-locar { width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; margin-top: 10px; }
+        
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; width: 100%; max-width: 500px; border-radius: 20px; padding: 30px; position: relative; }
+        .fechar { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; }
+        .imagem-modal { width: 100%; height: 250px; object-fit: cover; border-radius: 15px; margin-bottom: 20px; }
+        
+        .vuln-section { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; }
+        .vuln-section h3 { color: #dc2626; margin-bottom: 15px; }
+        .vuln-demo { background: #1e1e2e; color: #fff; padding: 15px; border-radius: 10px; font-family: monospace; font-size: 12px; overflow-x: auto; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 5px; font-size: 12px; margin-left: 10px; }
+        .badge-critical { background: #dc2626; color: white; }
+        .badge-high { background: #f59e0b; color: white; }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="container">
+        <div class="card active" id="telaLogin">
+            <h1>🎮 Locadora de Games</h1>
+            <p class="descricao">Entre na sua conta</p>
+            <div id="loginMensagem" class="mensagem"></div>
+            <form id="formLogin">
+                <div class="grupo"><label>E-mail</label><input type="text" id="emailLogin" placeholder="Digite seu e-mail" required></div>
+                <div class="grupo"><label>Senha</label><input type="password" id="senhaLogin" placeholder="Digite sua senha" required></div>
+                <button type="submit" class="btn btn-login">Entrar</button>
+            </form>
+            <div class="link" onclick="abrirCadastro()">Não possui cadastro? Cadastre-se</div>
+            <div style="margin-top: 20px; padding: 10px; background: #fef3c7; border-radius: 10px; font-size: 12px;">
+                <p style="color:#92400e;">⚠️ Teste SQL Injection: <code>admin@locadora.com' OR '1'='1</code></p>
+                <p style="color:#92400e;">📝 Contas: admin@locadora.com / admin123 | joao@email.com / 123456 | teste@email.com / teste123</p>
+            </div>
+        </div>
+
+        <div class="card" id="telaCadastro">
+            <h1>Cadastro</h1>
+            <p class="descricao">Crie sua conta gratuitamente</p>
+            <div id="cadastroMensagem" class="mensagem"></div>
+            <form id="formCadastro">
+                <div class="grupo"><label>Nome</label><input type="text" id="nomeCadastro" placeholder="Digite seu nome" required></div>
+                <div class="grupo"><label>E-mail</label><input type="email" id="emailCadastro" placeholder="Digite seu e-mail" required></div>
+                <div class="grupo"><label>Senha</label><input type="password" id="senhaCadastro" placeholder="Digite sua senha" required></div>
+                <div class="grupo"><label>Confirmar</label><input type="password" id="confirmarSenha" placeholder="Confirme sua senha" required></div>
+                <button type="submit" class="btn btn-cadastro">Cadastrar</button>
+            </form>
+            <div class="link" onclick="voltarLogin()">Voltar para Login</div>
+        </div>
+    </div>
+
+    <div class="dashboard" id="dashboard">
+        <div class="topo">
+            <h1>🎮 Locadora de Games</h1>
+            <div class="menu">
+                <button onclick="abrirJogos()">🎯 Catálogo</button>
+                <button onclick="abrirLocacoes()">📋 Minhas Locações</button>
+                <button onclick="abrirVuln()">⚠️ Vulnerabilidades</button>
+                <button class="logout" onclick="logout()">🚪 Sair</button>
+            </div>
+        </div>
+        <div id="jogosSection"><div class="games" id="listaGames"></div></div>
+        <div id="locacoesSection" style="display:none;"><div class="games" id="listaLocacoes"></div></div>
+        <div id="vulnSection" style="display:none;">
+            <div class="vuln-section"><h3>🔴 1. SQL Injection <span class="badge badge-critical">A03:2021</span></h3><p>Login vulnerável - use <code>admin@locadora.com' OR '1'='1</code></p><div class="vuln-demo">@Query("SELECT * FROM usuarios WHERE email = :email")</div></div>
+            <div class="vuln-section"><h3>🔴 2. Command Injection <span class="badge badge-critical">A03:2021</span></h3><p>POST /api/jogos?cmd=calc</p><div class="vuln-demo">Runtime.getRuntime().exec(cmd)</div></div>
+            <div class="vuln-section"><h3>🟠 3. Senhas em Texto Plano <span class="badge badge-high">A02:2021</span></h3><p>Senhas armazenadas sem criptografia</p><div class="vuln-demo">SELECT * FROM usuarios</div></div>
+            <div class="vuln-section"><h3>🟠 4. Controle de Acesso Inadequado <span class="badge badge-high">A01:2021</span></h3><p>DELETE /api/jogos/{id} sem verificação</p></div>
+            <div class="vuln-section"><h3>🟠 5. Stack Trace Exposto <span class="badge badge-high">A05:2021</span></h3><p>server.error.include-stacktrace=always</p></div>
+            <div class="vuln-section"><h3>🟠 6. IDOR <span class="badge badge-high">A01:2021</span></h3><p>IDs manipuláveis - PUT /api/jogos/{id}</p></div>
+            <div class="vuln-section"><h3>🟡 7. XSS <span class="badge badge-high">A03:2021</span></h3><p>Cadastro sem validação de entrada</p></div>
+            <div class="vuln-section"><h3>🟡 8. Log4Shell <span class="badge badge-high">CVE-2021-44228</span></h3><p>log4j-core:2.14.1</p></div>
+            <div class="vuln-section"><h3>🟡 9. Falta de Criptografia <span class="badge badge-high">A02:2021</span></h3><p>Dados sensíveis sem proteção</p></div>
+            <div class="vuln-section"><h3>🟡 10. Falta de Controle de Sessão <span class="badge badge-high">A07:2021</span></h3><p>Sem token JWT ou session management</p></div>
+        </div>
+    </div>
+
+    <div id="modalDetalhes" class="modal">
+        <div class="modal-content">
+            <span class="fechar" onclick="fecharDetalhes()">✕</span>
+            <img id="imagemGame" class="imagem-modal">
+            <h1 id="tituloGame"></h1>
+            <div class="game-detalhes">
+                <p><strong>Plataforma:</strong> <span id="plataformaGame"></span></p>
+                <p><strong>Gênero:</strong> <span id="generoGame"></span></p>
+                <p><strong>Preço/dia:</strong> R$ <span id="precoGame"></span></p>
+                <p><strong>Descrição:</strong> <span id="descricaoGame"></span></p>
+            </div>
+            <button class="btn-locar" onclick="alugarGame()">✅ Alugar (7 dias)</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8081/api';
+        let usuarioLogado = null;
+        let jogos = [];
+        let jogoSelecionado = null;
+
+        function abrirCadastro() { document.getElementById("telaLogin").classList.remove("active"); document.getElementById("telaCadastro").classList.add("active"); }
+        function voltarLogin() { document.getElementById("telaCadastro").classList.remove("active"); document.getElementById("telaLogin").classList.add("active"); }
+        function abrirJogos() { document.getElementById("jogosSection").style.display = "block"; document.getElementById("locacoesSection").style.display = "none"; document.getElementById("vulnSection").style.display = "none"; carregarJogos(); }
+        function abrirLocacoes() { document.getElementById("jogosSection").style.display = "none"; document.getElementById("locacoesSection").style.display = "block"; document.getElementById("vulnSection").style.display = "none"; carregarMinhasLocacoes(); }
+        function abrirVuln() { document.getElementById("jogosSection").style.display = "none"; document.getElementById("locacoesSection").style.display = "none"; document.getElementById("vulnSection").style.display = "block"; }
+        function fecharDetalhes() { document.getElementById("modalDetalhes").style.display = "none"; }
+
+        document.getElementById("formCadastro").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const nome = document.getElementById("nomeCadastro").value;
+            const email = document.getElementById("emailCadastro").value;
+            const senha = document.getElementById("senhaCadastro").value;
+            const confirmar = document.getElementById("confirmarSenha").value;
+            const msg = document.getElementById("cadastroMensagem");
+
+            if (senha !== confirmar) { msg.className = "mensagem erro"; msg.innerText = "Senhas não coincidem!"; return; }
+
+            try {
+                const response = await fetch(`${API_URL}/usuarios`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, email, senha, role: 'USER' })
+                });
+                if (response.ok) { msg.className = "mensagem sucesso"; msg.innerText = "✅ Cadastro realizado!"; setTimeout(() => voltarLogin(), 1500); }
+                else { msg.className = "mensagem erro"; msg.innerText = "❌ Erro ao cadastrar!"; }
+            } catch (error) { msg.className = "mensagem erro"; msg.innerText = "❌ Backend não está rodando!"; }
+        });
+
+        document.getElementById("formLogin").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const email = document.getElementById("emailLogin").value;
+            const senha = document.getElementById("senhaLogin").value;
+            const msg = document.getElementById("loginMensagem");
+
+            try {
+                const response = await fetch(`${API_URL}/login?email=${encodeURIComponent(email)}&senha=${encodeURIComponent(senha)}`, { method: 'POST' });
+                const data = await response.json();
+                if (data.success) {
+                    msg.className = "mensagem sucesso"; msg.innerText = "✅ Login realizado!";
+                    usuarioLogado = data.usuario;
+                    localStorage.setItem('usuarioLogado', JSON.stringify(usuarioLogado));
+                    setTimeout(() => { document.getElementById("container").style.display = "none"; document.getElementById("dashboard").classList.add("active"); carregarJogos(); }, 1000);
+                } else { msg.className = "mensagem erro"; msg.innerText = data.message || "❌ Erro!"; }
+            } catch (error) { msg.className = "mensagem erro"; msg.innerText = "❌ Backend não está rodando!"; }
+        });
+
+        async function carregarJogos() {
+            try {
+                const response = await fetch(`${API_URL}/jogos`);
+                jogos = await response.json();
+                const lista = document.getElementById("listaGames");
+                lista.innerHTML = "";
+                jogos.forEach(j => { lista.innerHTML += `<div class="game-card"><img src="${j.imagemUrl}" onerror="this.src='https://via.placeholder.com/400x200'"><div class="game-info"><h2>${j.titulo}</h2><p>${j.plataforma} | ${j.genero}</p><p class="preco">R$ ${j.precoDiaria}/dia</p><button class="btn-locar" onclick="abrirDetalhes(${j.id})">Ver Detalhes</button></div></div>`; });
+            } catch (error) { console.error("Erro ao carregar jogos:", error); }
+        }
+
+        function abrirDetalhes(id) {
+            jogoSelecionado = jogos.find(j => j.id === id);
+            document.getElementById("tituloGame").innerText = jogoSelecionado.titulo;
+            document.getElementById("plataformaGame").innerText = jogoSelecionado.plataforma;
+            document.getElementById("generoGame").innerText = jogoSelecionado.genero;
+            document.getElementById("precoGame").innerText = jogoSelecionado.precoDiaria;
+            document.getElementById("descricaoGame").innerText = jogoSelecionado.descricao;
+            document.getElementById("imagemGame").src = jogoSelecionado.imagemUrl;
+            document.getElementById("modalDetalhes").style.display = "flex";
+        }
+
+        async function alugarGame() {
+            if (!jogoSelecionado || !usuarioLogado) { alert("Faça login primeiro!"); return; }
+            try {
+                const response = await fetch(`${API_URL}/locacoes?usuarioId=${usuarioLogado.id}`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ jogo: { id: jogoSelecionado.id } })
+                });
+                if (response.ok) { alert(`✅ Aluguel confirmado! Total: R$ ${(jogoSelecionado.precoDiaria * 7).toFixed(2)}`); fecharDetalhes(); carregarMinhasLocacoes(); }
+                else alert("❌ Erro ao alugar!");
+            } catch (error) { alert("❌ Erro de conexão!"); }
+        }
+
+        async function carregarMinhasLocacoes() {
+            if (!usuarioLogado) return;
+            try {
+                const response = await fetch(`${API_URL}/locacoes/usuario?usuarioId=${usuarioLogado.id}`);
+                const locacoes = await response.json();
+                const lista = document.getElementById("listaLocacoes");
+                if (locacoes.length === 0) { lista.innerHTML = "<p style='text-align:center;padding:40px;background:white;border-radius:15px;'>Nenhuma locação</p>"; return; }
+                lista.innerHTML = "";
+                for (const l of locacoes) {
+                    const j = jogos.find(jg => jg.id === l.jogo?.id);
+                    lista.innerHTML += `<div class="game-card"><div class="game-info"><h2>${j?.titulo || 'Game'}</h2><p>Valor: R$ ${l.valorTotal?.toFixed(2)}</p><p>Status: ${l.status}</p>${l.status === 'ALUGADO' ? `<button class="btn-locar" style="background:#f59e0b" onclick="devolverJogo(${l.id})">Devolver</button>` : ''}</div></div>`;
+                }
+            } catch (error) { console.error("Erro:", error); }
+        }
+
+        async function devolverJogo(id) {
+            await fetch(`${API_URL}/locacoes/${id}/devolucao`, { method: 'PUT' });
+            alert("✅ Jogo devolvido!");
+            carregarMinhasLocacoes();
+        }
+
+        function logout() { localStorage.removeItem('usuarioLogado'); usuarioLogado = null; document.getElementById("dashboard").classList.remove("active"); document.getElementById("container").style.display = "block"; document.getElementById("telaLogin").classList.add("active"); }
+
+        window.onload = () => { const saved = localStorage.getItem('usuarioLogado'); if (saved) { usuarioLogado = JSON.parse(saved); document.getElementById("container").style.display = "none"; document.getElementById("dashboard").classList.add("active"); carregarJogos(); } };
+    </script>
+</body>
+</html>
