@@ -1,0 +1,15 @@
+com\locadora\security\SecurityConfig.class
+com\locadora\config\DataInitializer.class
+com\locadora\controllers\JogoController.class
+com\locadora\repositories\JogoRepository.class
+com\locadora\dto\LoginResponse.class
+com\locadora\dto\LoginRequest.class
+com\locadora\controllers\LocacaoController.class
+com\locadora\repositories\UsuarioRepository.class
+com\locadora\LocadoraApplication.class
+com\locadora\models\Locacao.class
+com\locadora\models\Usuario.class
+com\locadora\controllers\UsuarioController.class
+com\locadora\repositories\LocacaoRepository.class
+com\locadora\models\Jogo.class
+com\locadora\security\CustomUserDetailsService.class

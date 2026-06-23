@@ -1,0 +1,15 @@
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\config\DataInitializer.java
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\controllers\JogoController.java
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\controllers\LocacaoController.java
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\controllers\UsuarioController.java
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\dto\LoginRequest.java
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\dto\LoginResponse.java
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\LocadoraApplication.java
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\models\Jogo.java
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\models\Locacao.java
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\models\Usuario.java
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\repositories\JogoRepository.java
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\repositories\LocacaoRepository.java
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\repositories\UsuarioRepository.java
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\security\CustomUserDetailsService.java
+E:\FACUL\locadora-segura-produto2\locadora-segura\src\main\java\com\locadora\security\SecurityConfig.java
